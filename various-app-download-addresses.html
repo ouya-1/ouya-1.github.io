@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>绿云各种app下载地址</title>
+<style>
+  .container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+  }
+  .item {
+    margin: 20px;
+    text-align: center;
+  }
+  .item img {
+    width: 200px;
+    height: auto;
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="item">
+    <img src="./images/9.jpg" alt="手机点菜" onclick="copyToClipboard('http://app.ihotel.cn/app2formobile/2.8.20/index.html')">
+    <p>手机点菜(绿云餐饮)</p>
+  </div>
+  <div class="item">
+    <img src="./images/9.jpg" alt="宾客点菜" onclick="copyToClipboard('https://app.ihotel.cn/app2forguest/2.8.20/index.html')">
+    <p>宾客点菜(绿云餐饮)</p>
+  </div>
+  <div class="item">
+    <img src="./images/6.jpg" alt="客房宝" onclick="copyToClipboard('http://app.ihotel.cn/room/latest/index.html')">
+    <p>客房宝</p>
+  </div>
+  <div class="item">
+    <img src="./images/2.jpg" alt="前台自助" onclick="copyToClipboard('http://app.ihotel.cn/iaux/latest/index.html')">
+    <p>前台自助(iHotel前台自助)</p>
+  </div>
+  <div class="item">
+    <img src="./images/9.jpg" alt="综合收银" onclick="copyToClipboard('https://app.ihotel.cn/app2forpad/2.8.20/index.html')">
+    <p>综合收银(绿云餐饮(服务员版))</p>
+  </div>
+  <div class="item">
+    <img src="./images/3.jpg" alt="手机pms" onclick="copyToClipboard('https://app.ihotel.cn/ipms.html')">
+    <p>绿云pms</p>
+  </div>
+  <div class="item">
+    <img src="./images/8.jpg" alt="手机点菜2.0" onclick="copyToClipboard('http://app.ihotel.cn/WPosMobile/latest/index.html')">
+    <p>手机点菜2.0(手机点餐)</p>
+  </div>
+  <div class="item">
+    <img src="./images/7.jpg" alt="SC" onclick="copyToClipboard('https://app-1251575231.cos.ap-shanghai.myqcloud.com/miSc-plus/index.html')">
+    <p>绿云SC</p>
+  </div>
+  <div class="item">
+    <img src="./images/1.jpg" alt="宾客点餐2.0" onclick="copyToClipboard('http://app.ihotel.cn/iMenu/latest/index.html')">
+    <p>宾客点餐2.0(imenu-fornt)</p>
+  </div>
+  <div class="item">
+    <img src="" alt="餐饮零售" onclick="copyToClipboard('http://101.43.25.239:8103/iSell/index.html#/ 餐饮地址 +/iSell/index.html')">
+    <p>餐饮零售</p>
+  </div>
+</div>
+
+<script>
+  function copyToClipboard(url) {
+    var input = document.createElement('input');
+    input.style.position = 'fixed';
+    input.style.opacity = 0;
+    input.value = url;
+    document.body.appendChild(input);
+    input.select();
+    document.execCommand('copy');
+    document.body.removeChild(input);
+    alert('已复制网址到剪切板：' + url);
+  }
+</script>
+
+</body>
+</html>
