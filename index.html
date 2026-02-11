@@ -1,85 +1,465 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>绿云各种app下载地址</title>
-<style>
-  .container {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: center;
-  }
-  .item {
-    margin: 20px;
-    text-align: center;
-  }
-  .item img {
-    width: 200px;
-    height: auto;
-    cursor: pointer;
-  }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文本显示服务</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            border-bottom: 2px solid #4CAF50;
+            padding-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        .copy-btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: background 0.3s;
+        }
+        .copy-btn:hover {
+            background: #45a049;
+        }
+        .copy-btn:active {
+            transform: translateY(1px);
+        }
+        .copy-btn.copied {
+            background: #2196F3;
+        }
+        .text-container {
+            position: relative;
+        }
+        #displayText {
+            margin: 20px 0;
+            padding: 20px;
+            background: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            line-height: 1.6;
+            white-space: pre-wrap; /* 保留空格和换行 */
+            word-break: break-word;
+            min-height: 100px;
+            max-height: 400px;
+            overflow-y: auto;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+        }
+        #displayText.empty {
+            color: #999;
+            font-style: italic;
+        }
+        .text-stats {
+            display: flex;
+            justify-content: space-between;
+            color: #666;
+            font-size: 14px;
+            margin-top: 5px;
+            padding: 0 5px;
+        }
+        .text-stats span {
+            background: #e8f5e9;
+            padding: 2px 8px;
+            border-radius: 3px;
+        }
+        .usage {
+            margin-top: 30px;
+            padding: 15px;
+            background: #e8f5e9;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 14px;
+        }
+        .usage h3 {
+            margin-top: 0;
+            color: #333;
+        }
+        .url-display {
+            background: white;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+            word-break: break-all;
+            border: 1px solid #c8e6c9;
+        }
+        .success-message {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 4px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            opacity: 0;
+            transform: translateX(100px);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        .success-message.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        .format-note {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 4px;
+            padding: 10px;
+            margin: 10px 0;
+            font-size: 14px;
+        }
+        .format-note ul {
+            margin: 5px 0;
+            padding-left: 20px;
+        }
+        /* 滚动条样式 */
+        #displayText::-webkit-scrollbar {
+            width: 8px;
+        }
+        #displayText::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+        #displayText::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 4px;
+        }
+        #displayText::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+        /* 代码块样式 */
+        code {
+            background: #f8f9fa;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+    </style>
 </head>
 <body>
+    <div class="container">
+        <h1>
+            文本显示服务
+            <button id="copyButton" class="copy-btn">
+                复制文本
+            </button>
+        </h1>
+        
+        <div class="text-container">
+            <div class="controls">
+                <button id="selectAllBtn" class="copy-btn" style="background: #2196F3;">
+                    全选文本
+                </button>
+                <button id="clearSelectionBtn" class="copy-btn" style="background: #9E9E9E;">
+                    取消选择
+                </button>
+                <button id="formatTextBtn" class="copy-btn" style="background: #9C27B0;">
+                    格式化文本
+                </button>
+            </div>
+            
+            <div id="displayText" class="empty">等待传入文本...</div>
+            
+            <div class="text-stats">
+                <span id="charCount">字符数: 0</span>
+                <span id="lineCount">行数: 0</span>
+                <span id="wordCount">单词数: 0</span>
+            </div>
+        </div>
+        
+        <div class="format-note">
+        </div>
+        
+        <div class="usage">
+            <h3>使用方法：</h3>
+            <p>在 URL 后添加查询参数来显示文本：</p>
+            <div class="url-display">
+                <code id="currentUrl"></code>
+            </div>
+            <p>示例：</p>
+            <code>http://yourdomain.com/?text=第一行%0A第二行%0A第三行</code><br><br>
+            <code>http://yourdomain.com/?text=第一行\n第二行\n第三行</code>
+        </div>
+    </div>
 
-<div class="container">
-  <div class="item">
-    <img src="./images/9.jpg" alt="手机点菜" onclick="copyToClipboard('http://app.ihotel.cn/app2formobile/2.8.20/index.html')">
-    <p>手机点菜(绿云餐饮)</p>
-  </div>
-  <div class="item">
-    <img src="./images/9.jpg" alt="宾客点菜" onclick="copyToClipboard('https://app.ihotel.cn/app2forguest/2.8.20/index.html')">
-    <p>宾客点菜(绿云餐饮)</p>
-  </div>
-  <div class="item">
-    <img src="./images/6.jpg" alt="客房宝" onclick="copyToClipboard('http://app.ihotel.cn/room/latest/index.html')">
-    <p>客房宝</p>
-  </div>
-  <div class="item">
-    <img src="./images/2.jpg" alt="前台自助" onclick="copyToClipboard('http://app.ihotel.cn/iaux/latest/index.html')">
-    <p>前台自助(iHotel前台自助)</p>
-  </div>
-  <div class="item">
-    <img src="./images/9.jpg" alt="综合收银" onclick="copyToClipboard('https://app.ihotel.cn/app2forpad/2.8.20/index.html')">
-    <p>综合收银(绿云餐饮(服务员版))</p>
-  </div>
-  <div class="item">
-    <img src="./images/3.jpg" alt="手机pms" onclick="copyToClipboard('https://app.ihotel.cn/ipms.html')">
-    <p>绿云pms</p>
-  </div>
-  <div class="item">
-    <img src="./images/8.jpg" alt="手机点菜2.0" onclick="copyToClipboard('http://app.ihotel.cn/WPosMobile/latest/index.html')">
-    <p>手机点菜2.0(手机点餐)</p>
-  </div>
-  <div class="item">
-    <img src="./images/7.jpg" alt="SC" onclick="copyToClipboard('https://app-1251575231.cos.ap-shanghai.myqcloud.com/miSc-plus/index.html')">
-    <p>绿云SC</p>
-  </div>
-  <div class="item">
-    <img src="./images/1.jpg" alt="宾客点餐2.0" onclick="copyToClipboard('http://app.ihotel.cn/iMenu/latest/index.html')">
-    <p>宾客点餐2.0(imenu-fornt)</p>
-  </div>
-  <div class="item">
-    <img src="./images/10.jpg" alt="餐饮零售" onclick="copyToClipboard('http://101.43.25.239:8103/iSell/index.html#/ 餐饮地址 +/iSell/index.html')">
-    <p>餐饮零售</p>
-  </div>
-</div>
+    <!-- 复制成功提示 -->
+    <div id="successMessage" class="success-message">
+        文本已复制到剪贴板！
+    </div>
 
-<script>
-  function copyToClipboard(url) {
-    var input = document.createElement('input');
-    input.style.position = 'fixed';
-    input.style.opacity = 0;
-    input.value = url;
-    document.body.appendChild(input);
-    input.select();
-    document.execCommand('copy');
-    document.body.removeChild(input);
-    alert('已复制网址到剪切板：' + url);
-  }
-</script>
+    <script>
+        // 获取DOM元素
+        const displayElement = document.getElementById('displayText');
+        const urlElement = document.getElementById('currentUrl');
+        const copyButton = document.getElementById('copyButton');
+        const selectAllBtn = document.getElementById('selectAllBtn');
+        const clearSelectionBtn = document.getElementById('clearSelectionBtn');
+        const formatTextBtn = document.getElementById('formatTextBtn');
+        const successMessage = document.getElementById('successMessage');
+        const charCountElement = document.getElementById('charCount');
+        const lineCountElement = document.getElementById('lineCount');
+        const wordCountElement = document.getElementById('wordCount');
 
+        // 获取 URL 参数
+        const urlParams = new URLSearchParams(window.location.search);
+        let text = urlParams.get('text');
+        
+        // 处理文本中的换行符和特殊字符
+        function processText(input) {
+            if (!input) return '';
+            
+            // 解码URL编码
+            let processed = decodeURIComponent(input);
+            
+            // 替换常见的换行符表示方式
+            // 处理 \n 转义字符（注意：这里处理的是字符串"\n"，而不是真正的换行符）
+            processed = processed.replace(/\\n/g, '\n');
+            processed = processed.replace(/\\r\\n/g, '\r\n');
+            processed = processed.replace(/\\r/g, '\r');
+            
+            // 处理其他常见的转义字符
+            processed = processed.replace(/\\t/g, '\t');
+            processed = processed.replace(/\\'/g, "'");
+            processed = processed.replace(/\\"/g, '"');
+            processed = processed.replace(/\\\\/g, '\\');
+            
+            return processed;
+        }
+        
+        // 更新统计信息
+        function updateTextStats(text) {
+            const chars = text.length;
+            const lines = text.split('\n').length;
+            const words = text.trim().split(/\s+/).filter(word => word.length > 0).length;
+            
+            charCountElement.textContent = `字符数: ${chars}`;
+            lineCountElement.textContent = `行数: ${lines}`;
+            wordCountElement.textContent = `单词数: ${words}`;
+        }
+        
+        // 格式化文本（修复常见的格式问题）
+        function formatText(text) {
+            // 去除首尾空白
+            let formatted = text.trim();
+            
+            // 确保每行末尾没有多余的空格
+            formatted = formatted.split('\n').map(line => line.trimEnd()).join('\n');
+            
+            // 删除空行（可选，根据需要调整）
+            // formatted = formatted.split('\n').filter(line => line.trim() !== '').join('\n');
+            
+            return formatted;
+        }
+        
+        // 显示成功消息
+        function showSuccessMessage(message = '文本已复制到剪贴板！') {
+            successMessage.textContent = message;
+            successMessage.classList.add('show');
+            setTimeout(() => {
+                successMessage.classList.remove('show');
+            }, 2000);
+        }
+        
+        // 生成带有换行符的示例URL
+        function generateExampleURL() {
+            const exampleText = "第一行\n第二行\n第三行";
+            const encodedExample = encodeURIComponent(exampleText.replace(/\n/g, '%0A'));
+            return `${window.location.origin}${window.location.pathname}?text=${encodedExample}`;
+        }
+
+        // 复制文本函数
+        async function copyTextToClipboard() {
+            try {
+                const textToCopy = displayElement.textContent;
+                if (!textToCopy || textToCopy.includes('等待传入文本') || textToCopy.includes('没有传入文本')) {
+                    throw new Error('没有文本可复制');
+                }
+                
+                // 使用现代Clipboard API
+                await navigator.clipboard.writeText(textToCopy);
+                
+                // 更新按钮状态
+                copyButton.textContent = '已复制！';
+                copyButton.classList.add('copied');
+                
+                // 显示成功消息
+                showSuccessMessage();
+                
+                // 2秒后恢复按钮状态
+                setTimeout(() => {
+                    copyButton.textContent = '复制文本';
+                    copyButton.classList.remove('copied');
+                }, 2000);
+                
+            } catch (err) {
+                // 如果Clipboard API失败，使用备用方法
+                try {
+                    const textArea = document.createElement('textarea');
+                    textArea.value = displayElement.textContent;
+                    textArea.style.position = 'fixed';
+                    textArea.style.opacity = '0';
+                    document.body.appendChild(textArea);
+                    textArea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textArea);
+                    
+                    // 更新按钮状态
+                    copyButton.textContent = '已复制！';
+                    copyButton.classList.add('copied');
+                    showSuccessMessage();
+                    
+                    setTimeout(() => {
+                        copyButton.textContent = '复制文本';
+                        copyButton.classList.remove('copied');
+                    }, 2000);
+                } catch (backupErr) {
+                    alert('复制失败，请手动选择文本后按Ctrl+C复制');
+                }
+            }
+        }
+
+        // 全选文本
+        function selectAllText() {
+            const range = document.createRange();
+            range.selectNodeContents(displayElement);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            
+            // 滚动到选中区域
+            displayElement.focus();
+            displayElement.scrollTop = 0;
+        }
+
+        // 取消选择
+        function clearSelection() {
+            window.getSelection().removeAllRanges();
+        }
+
+        // 格式化文本按钮事件
+        function handleFormatText() {
+            if (!displayElement.textContent || displayElement.textContent.includes('等待传入文本') || 
+                displayElement.textContent.includes('没有传入文本')) {
+                showSuccessMessage('没有文本可格式化');
+                return;
+            }
+            
+            const originalText = displayElement.textContent;
+            const formattedText = formatText(originalText);
+            
+            if (originalText !== formattedText) {
+                displayElement.textContent = formattedText;
+                updateTextStats(formattedText);
+                showSuccessMessage('文本已格式化！');
+            } else {
+                showSuccessMessage('文本已经是良好格式');
+            }
+        }
+
+        // 主初始化函数
+        function init() {
+            if (text) {
+                // 处理文本（包括换行符）
+                text = processText(text);
+                displayElement.textContent = text;
+                displayElement.classList.remove('empty');
+                
+                // 更新统计信息
+                updateTextStats(text);
+                
+                // 更新页面标题
+                const preview = text.split('\n')[0];
+                const shortPreview = preview.length > 30 ? preview.substring(0, 30) + '...' : preview;
+                document.title = shortPreview + ' - 文本显示';
+            } else {
+                displayElement.textContent = '没有传入文本。请使用 ?text=你的文本 格式访问此页面。';
+                updateTextStats('');
+            }
+            
+            // 显示当前URL
+            urlElement.textContent = window.location.href;
+            
+            // 如果没有文本，添加示例链接
+            if (!text) {
+                const exampleLink = document.createElement('p');
+                exampleLink.innerHTML = `<strong>带换行符的示例：</strong><br>
+                <a href="${generateExampleURL()}" target="_blank">${generateExampleURL()}</a>`;
+                document.querySelector('.usage').appendChild(exampleLink);
+            }
+        }
+
+        // 初始化页面
+        init();
+        
+        // 添加复制按钮事件监听
+        copyButton.addEventListener('click', copyTextToClipboard);
+        
+        // 添加全选按钮事件监听
+        selectAllBtn.addEventListener('click', selectAllText);
+        
+        // 添加取消选择按钮事件监听
+        clearSelectionBtn.addEventListener('click', clearSelection);
+        
+        // 添加格式化文本按钮事件监听
+        formatTextBtn.addEventListener('click', handleFormatText);
+        
+        // 添加键盘快捷键支持
+        document.addEventListener('keydown', function(e) {
+            // Ctrl+C 复制（但注意浏览器默认行为）
+            if (e.ctrlKey && e.key === 'c') {
+                // 如果文本被选中，不做额外处理
+                const selection = window.getSelection().toString();
+                if (selection) return;
+                
+                // 如果没有选中文本，尝试复制整个显示文本
+                e.preventDefault();
+                copyTextToClipboard();
+            }
+            
+            // Ctrl+A 全选
+            if (e.ctrlKey && e.key === 'a') {
+                e.preventDefault();
+                selectAllText();
+            }
+            
+            // Ctrl+F 格式化文本
+            if (e.ctrlKey && e.key === 'f') {
+                e.preventDefault();
+                handleFormatText();
+            }
+            
+            // ESC 取消选择
+            if (e.key === 'Escape') {
+                clearSelection();
+            }
+        });
+    </script>
 </body>
 </html>
